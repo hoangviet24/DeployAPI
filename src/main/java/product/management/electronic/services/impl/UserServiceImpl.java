@@ -3,6 +3,7 @@ package product.management.electronic.services.impl;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -43,7 +44,8 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
-
+    @Value("${base_url}")
+    private String baseUrl;
     public UserDetails loadUserByUsername(String username) throws ResourceNotFoundException {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException(USER_NOTFOUND));
         List<GrantedAuthority> authorities = user.getRole().stream().map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
@@ -151,7 +153,7 @@ public class UserServiceImpl implements UserService {
         helper.setTo(to);
         helper.setSubject("Kích hoạt tài khoản của bạn");
 
-        String activationLink = "http://localhost:8080/api/v1/auth/activate?token=" + token;
+        String activationLink = baseUrl + "/api/v1/auth/activate?token=" + token;
         saveToken(to, token);
 
         ClassPathResource resource = new ClassPathResource("templates/email_active.html");
