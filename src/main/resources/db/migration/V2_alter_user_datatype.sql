@@ -1,0 +1,1 @@
+Alter table user_roles change column id varchar(16);
