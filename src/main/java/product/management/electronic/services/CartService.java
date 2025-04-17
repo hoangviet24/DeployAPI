@@ -14,4 +14,5 @@ public interface CartService {
     public CartDto addToCart(CartItemAddDto request);
     public CartDto getCartByUserId(UUID userId);
     Cart findUser(UUID id);
+    void removeFromCart(UUID uuid, UUID productId);
 }

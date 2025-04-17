@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -94,6 +95,7 @@ public class UserServiceImpl implements UserService {
 
         // 4. Lưu token kèm theo user (nếu token nằm trong user)
         user.setActivationToken(token);
+        user.setActivationTokenExpirationTime(LocalDateTime.now().plusMinutes(1));
         User savedUser = userRepository.save(user);  // phải dùng biến này để lấy ID & createAt
 
         // 5. Trả về AuthDto
@@ -116,6 +118,7 @@ public class UserServiceImpl implements UserService {
         User user = userOptional.get();
         user.setActive(true);
         user.setActivationToken(null);
+        user.setActivationTokenExpirationTime(null);
         userRepository.save(user);
     }
 
@@ -194,6 +197,28 @@ public class UserServiceImpl implements UserService {
 
         helper.setText(htmlContent, true);
         mailSender.send(message);
+    }
+
+    @Override
+    public void resendActivationToken(String email) throws MessagingException, IOException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOTFOUND));
+
+        if (user.isEnabled()) {
+            throw new RuntimeException("Tài khoản đã được kích hoạt trước đó.");
+        }
+
+        String newToken = UUID.randomUUID().toString();
+        user.setActivationToken(newToken);
+        user.setActivationTokenExpirationTime(LocalDateTime.now().plusMinutes(15));
+
+        userRepository.save(user);
+
+        // Gửi lại email
+        String subject = "Kích hoạt lại tài khoản của bạn";
+        String activationLink = baseUrl+"/api/auth/activate?token=" + newToken;
+        sendEmailActivation(user.getEmail(), subject,
+                "Nhấn vào link sau để kích hoạt lại tài khoản của bạn: " + activationLink);
     }
 
 

@@ -25,6 +25,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    @PostMapping("/resend-activation")
+    public ResponseEntity<String> resendActivationToken(@RequestParam String email) throws MessagingException, IOException {
+        userService.resendActivationToken(email);
+        return ResponseEntity.ok("Đã gửi lại token kích hoạt, vui lòng kiểm tra email.");
+    }
 
     @PostMapping("/forgotPassword")
     public ResponseEntity<ApiResponse> forgotPassword(@RequestParam String email) throws MessagingException, IOException {

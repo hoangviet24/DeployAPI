@@ -20,7 +20,7 @@ public class Cart {
     @Column(unique = true, updatable = false)
     @JdbcTypeCode(Types.VARCHAR)
     private UUID id;
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<CartItem> items = new ArrayList<>();
     @OneToOne(optional = false)
     @JoinColumn(name = "userId",unique = true)

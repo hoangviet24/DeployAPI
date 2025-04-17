@@ -40,6 +40,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private boolean isActive = false;
     private String activationToken;
+    private LocalDateTime activationTokenExpirationTime;
     @Column
     private String refreshToken;
     @ManyToMany(fetch = FetchType.EAGER)

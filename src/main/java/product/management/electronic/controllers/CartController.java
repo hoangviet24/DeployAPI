@@ -19,11 +19,15 @@ import product.management.electronic.dto.Cart.CartDto;
 import product.management.electronic.dto.Cart.CartItemAddDto;
 import product.management.electronic.dto.Cart.UpdateCartDto;
 
+import product.management.electronic.entities.User;
+import product.management.electronic.exceptions.ResourceNotFoundException;
 import product.management.electronic.services.CartService;
 import product.management.electronic.services.UserService;
 
 import java.util.List;
 import java.util.UUID;
+
+import static product.management.electronic.constants.MessageConstant.USER_NOTFOUND;
 
 @RestController
 @RequiredArgsConstructor
@@ -55,6 +59,14 @@ public class CartController {
             @RequestBody List<UpdateCartDto> cartItemRequests) {
         CartDto updatedCart = cartService.updateCart(cartId, cartItemRequests);
         return ResponseEntity.ok(updatedCart);
+    }
+    @PreAuthorize("isAuthenticated()")
+    @DeleteMapping("/remove/{productId}")
+    public ResponseEntity<String> removeFromCart(@PathVariable UUID productId, Authentication authentication){
+        String username = authentication.getName();
+        UserDto user = userService.findByUsername(username);
+        cartService.removeFromCart(user.getId(),productId);
+        return ResponseEntity.ok("Remove");
     }
 }
 

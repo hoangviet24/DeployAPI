@@ -34,7 +34,7 @@ public interface UserService {
 
     void sendEmailActivation(String to, String username, String token)
             throws MessagingException, IOException;
-
+    void resendActivationToken(String email) throws MessagingException, IOException;
     void activateAccount(String token);
 
     List<UserDto> getAllUsers();

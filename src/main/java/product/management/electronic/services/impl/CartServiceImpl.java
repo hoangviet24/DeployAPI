@@ -18,10 +18,7 @@ import product.management.electronic.services.ProductService;
 import product.management.electronic.services.UserService;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static product.management.electronic.constants.MessageConstant.*;
@@ -126,5 +123,21 @@ public class CartServiceImpl implements CartService {
     @Override
     public Cart findUser(UUID id) {
         return cartRepository.findByUsers(userService.getUserId(id)).orElseThrow(() -> new ResourceNotFoundException(USER_NOTFOUND));
+    }
+    @Override
+    public void removeFromCart(UUID uuid, UUID productId) {
+        Cart cart = cartRepository.findByUsers(userService.getUserId(uuid))
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOTFOUND));
+
+        Iterator<CartItem> iterator = cart.getItems().iterator();
+        while (iterator.hasNext()) {
+            CartItem item = iterator.next();
+            if (item.getProduct().getId().equals(productId)) {
+                iterator.remove();           // xoá khỏi list
+                item.setCart(null);          // ngắt liên kết với cart (rất quan trọng)
+            }
+        }
+
+        cartRepository.save(cart); // JPA sẽ tự xoá item khỏi DB nhờ orphanRemoval = true
     }
 }
