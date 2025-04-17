@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException(USER_NOTFOUND));
 
-        if (user.isEnabled()) {
+        if (user.isActive()) {
             throw new RuntimeException("The account has been previously activated.");
         }
 
