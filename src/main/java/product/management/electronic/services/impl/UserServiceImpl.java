@@ -77,7 +77,13 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         String token = UUID.randomUUID().toString();
         saveToken(user.getEmail(), token);
-        sendEmailActivation(user.getEmail(), user.getUsername(), token);
+        try {
+            sendEmailActivation(user.getEmail(), user.getUsername(), token);
+        } catch (MessagingException | IOException e) {
+            e.printStackTrace(); // log tạm để thấy lỗi thật sự
+            throw new RuntimeException("Send email failed: " + e.getMessage());
+        }
+
         return new AuthDto(user.getId(), user.getUsername(), user.getEmail(), user.getCreateAt());
     }
 
