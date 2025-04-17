@@ -116,6 +116,10 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userOptional.get();
+        if (user.getActivationTokenExpirationTime() != null &&
+                user.getActivationTokenExpirationTime().isBefore(LocalDateTime.now())) {
+            throw new BadRequestException("Token đã hết hạn. Vui lòng yêu cầu gửi lại token mới.");
+        }
         user.setActive(true);
         user.setActivationToken(null);
         user.setActivationTokenExpirationTime(null);
