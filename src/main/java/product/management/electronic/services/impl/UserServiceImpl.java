@@ -2,6 +2,7 @@ package product.management.electronic.services.impl;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -65,24 +66,31 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    public AuthDto registerUser(RegisterDto request) throws MessagingException, IOException {
+    @Transactional
+    public AuthDto registerUser(RegisterDto request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new ConflictException("Username already registered! " + request.getUsername());
         }
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new ConflictException("Email already registered! " + request.getEmail());
         }
+
         User user = userMapper.toEntity(request);
         user.setActive(false);
-        userRepository.save(user);
+
         String token = UUID.randomUUID().toString();
         saveToken(user.getEmail(), token);
+
+        // Gửi email trước khi lưu user
         try {
             sendEmailActivation(user.getEmail(), user.getUsername(), token);
         } catch (MessagingException | IOException e) {
-            e.printStackTrace(); // log tạm để thấy lỗi thật sự
+            e.printStackTrace();
             throw new RuntimeException("Send email failed: " + e.getMessage());
         }
+
+        // Tới đây email đã gửi ok → mới lưu user
+        userRepository.save(user);
 
         return new AuthDto(user.getId(), user.getUsername(), user.getEmail(), user.getCreateAt());
     }
