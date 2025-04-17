@@ -28,6 +28,7 @@ import product.management.electronic.repository.UserRepository;
 import product.management.electronic.services.UserService;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.SecureRandom;
@@ -170,14 +171,21 @@ public class UserServiceImpl implements UserService {
         String activationLink = baseUrl + "/api/v1/auth/activate?token=" + token;
         saveToken(to, token);
 
+        // ✅ Đọc file template từ JAR bằng InputStream
         ClassPathResource resource = new ClassPathResource("templates/email_active.html");
-        String htmlContent = new String(Files.readAllBytes(resource.getFile().toPath()), StandardCharsets.UTF_8);
+        String htmlContent;
+        try (InputStream inputStream = resource.getInputStream()) {
+            htmlContent = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        }
+
+        // Thay thế biến trong template
         htmlContent = htmlContent.replace("{{USER_NAME}}", username)
                 .replace("{{ACTIVATION_LINK}}", activationLink);
 
         helper.setText(htmlContent, true);
         mailSender.send(message);
     }
+
 
     public void sendEmailResetPassword(String to, String subject, String newPassword, String username) throws MessagingException, IOException {
         MimeMessage message = mailSender.createMimeMessage();
