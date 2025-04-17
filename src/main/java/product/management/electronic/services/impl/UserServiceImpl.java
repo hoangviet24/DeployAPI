@@ -118,14 +118,31 @@ public class UserServiceImpl implements UserService {
         User user = userOptional.get();
         if (user.getActivationTokenExpirationTime() != null &&
                 user.getActivationTokenExpirationTime().isBefore(LocalDateTime.now())) {
-            throw new BadRequestException("Token đã hết hạn. Vui lòng yêu cầu gửi lại token mới.");
+            throw new BadRequestException("Token is invalid or expired!.");
         }
         user.setActive(true);
         user.setActivationToken(null);
         user.setActivationTokenExpirationTime(null);
         userRepository.save(user);
     }
+    @Override
+    public void resendActivationToken(String email) throws MessagingException, IOException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOTFOUND));
 
+        if (user.isEnabled()) {
+            throw new RuntimeException("The account has been previously activated.");
+        }
+
+        String newToken = UUID.randomUUID().toString();
+        user.setActivationToken(newToken);
+        user.setActivationTokenExpirationTime(LocalDateTime.now().plusMinutes(5));
+
+        userRepository.save(user);
+
+        String token = UUID.randomUUID().toString();
+        sendEmailActivation(user.getEmail(), user.getUsername(), token);
+    }
     public void saveToken(String email, String token) {
         Optional<User> userOptional = userRepository.findByEmail(email);
         if (userOptional.isPresent()) {
@@ -203,27 +220,7 @@ public class UserServiceImpl implements UserService {
         mailSender.send(message);
     }
 
-    @Override
-    public void resendActivationToken(String email) throws MessagingException, IOException {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException(USER_NOTFOUND));
 
-        if (user.isEnabled()) {
-            throw new RuntimeException("Tài khoản đã được kích hoạt trước đó.");
-        }
-
-        String newToken = UUID.randomUUID().toString();
-        user.setActivationToken(newToken);
-        user.setActivationTokenExpirationTime(LocalDateTime.now().plusMinutes(15));
-
-        userRepository.save(user);
-
-        // Gửi lại email
-        String subject = "Kích hoạt lại tài khoản của bạn";
-        String activationLink = baseUrl+"/api/auth/activate?token=" + newToken;
-        sendEmailActivation(user.getEmail(), subject,
-                "Nhấn vào link sau để kích hoạt lại tài khoản của bạn: " + activationLink);
-    }
 
 
     public void sendEmailResetPassword(String to, String subject, String newPassword, String username) throws MessagingException, IOException {
