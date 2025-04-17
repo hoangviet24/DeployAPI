@@ -204,13 +204,15 @@ public class UserServiceImpl implements UserService {
         helper.setSubject(subject);
 
         ClassPathResource resource = new ClassPathResource("templates/email_password.html");
-        String htmlContent = new String(Files.readAllBytes(resource.getFile().toPath()), StandardCharsets.UTF_8);
+        InputStream inputStream = resource.getInputStream();
+        String htmlContent = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         htmlContent = htmlContent.replace("{{NEW_PASSWORD}}", newPassword)
                 .replace("{{USER_NAME}}", username);
 
         helper.setText(htmlContent, true);
         mailSender.send(message);
     }
+
 
     @Override
     public List<UserDto> getAllUsers() {
