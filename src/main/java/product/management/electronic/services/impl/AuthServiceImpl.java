@@ -9,6 +9,7 @@ import product.management.electronic.dto.Auth.AuthenticationDto;
 import product.management.electronic.dto.Auth.LoginDto;
 import product.management.electronic.entities.User;
 import product.management.electronic.exceptions.BadRequestException;
+import product.management.electronic.exceptions.ForbiddenException;
 import product.management.electronic.repository.UserRepository;
 import product.management.electronic.response.ApiResponse;
 import product.management.electronic.services.AuthService;
@@ -31,7 +32,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByUsername(authenticationDto.getUsername())
                 .orElseThrow(() -> new BadRequestException(RESOURCE_NOT_FOUND));
         if (!user.isActive()) {
-            throw new BadRequestException("Account not activated. Please check your email to activate!");
+            throw new ForbiddenException("Account not activated. Please check your email to activate!");
         }
         if (!passwordEncoder.matches(authenticationDto.getPassword(), user.getPassword())) {
             throw new BadRequestException(RESOURCE_NOT_FOUND);

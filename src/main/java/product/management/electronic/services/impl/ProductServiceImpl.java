@@ -54,7 +54,11 @@ public class ProductServiceImpl implements ProductService {
         if (sort) {
             Sort sorting = Sort.by(sortBy).descending();
             pageable = PageRequest.of(page, size, sorting);
-        } else {
+        }else if(sort == false){
+            Sort sorting = Sort.by("id").ascending();
+            pageable = PageRequest.of(page,size,sorting);
+        }
+        else {
             pageable = PageRequest.of(page, size);
         }
         return productMapper.toDtoList(productRepository.findAll(pageable).getContent());
@@ -66,7 +70,11 @@ public class ProductServiceImpl implements ProductService {
         if (sort) {
             Sort sorting = Sort.by(sortBy).descending();
             pageable = PageRequest.of(page, size, sorting);
-        } else {
+        } else if(sort == false){
+            Sort sorting = Sort.by("id").ascending();
+            pageable = PageRequest.of(page,size,sorting);
+        }
+        else {
             pageable = PageRequest.of(page, size);
         }
         List<Product> products = productRepository.findByNameContaining(name, pageable)

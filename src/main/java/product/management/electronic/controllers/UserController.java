@@ -26,9 +26,9 @@ import java.util.UUID;
 public class UserController {
     private final UserService userService;
     @PostMapping("/resend-activation")
-    public ResponseEntity<String> resendActivationToken(@RequestParam String email) throws MessagingException, IOException {
+    public ResponseEntity<ApiResponse> resendActivationToken(@RequestParam String email) throws MessagingException, IOException {
         userService.resendActivationToken(email);
-        return ResponseEntity.ok("Đã gửi lại token kích hoạt, vui lòng kiểm tra email.");
+        return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), "Check your email"));
     }
 
     @PostMapping("/forgotPassword")
