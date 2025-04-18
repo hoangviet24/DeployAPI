@@ -4,11 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import product.management.electronic.entities.CartItem;
 import product.management.electronic.entities.OrderItem;
+import product.management.electronic.exceptions.ResourceNotFoundException;
 import product.management.electronic.repository.CartItemRepository;
 import product.management.electronic.services.CartItemService;
 
 import java.util.List;
 import java.util.UUID;
+
+import static product.management.electronic.constants.MessageConstant.ITEM_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -27,5 +30,12 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     public List<CartItem> findAllByIdIn(List<UUID> id) {
         return cartItemRepository.findAllByIdIn(id);
+    }
+
+    @Override
+    public void deleteCartItemById(UUID cartItemId) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new ResourceNotFoundException(ITEM_NOT_FOUND + cartItemId));
+        cartItemRepository.delete(cartItem);
     }
 }

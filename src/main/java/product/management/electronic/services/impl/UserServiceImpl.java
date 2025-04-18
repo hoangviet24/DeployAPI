@@ -78,14 +78,11 @@ public class UserServiceImpl implements UserService {
             throw new ConflictException("Email already registered! " + request.getEmail());
         }
 
-        // 1. Convert DTO → Entity
         User user = userMapper.toEntity(request);
         user.setActive(false);
 
-        // 2. Generate token
         String token = UUID.randomUUID().toString();
 
-        // 3. Gửi mail trước
         try {
             sendEmailActivation(user.getEmail(), user.getUsername(), token);
         } catch (MessagingException | IOException e) {
@@ -93,12 +90,10 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Send email failed: " + e.getMessage());
         }
 
-        // 4. Lưu token kèm theo user (nếu token nằm trong user)
         user.setActivationToken(token);
         user.setActivationTokenExpirationTime(LocalDateTime.now().plusMinutes(1));
-        User savedUser = userRepository.save(user);  // phải dùng biến này để lấy ID & createAt
+        User savedUser = userRepository.save(user);
 
-        // 5. Trả về AuthDto
         return new AuthDto(
                 savedUser.getId(),
                 savedUser.getUsername(),
@@ -106,7 +101,6 @@ public class UserServiceImpl implements UserService {
                 savedUser.getCreateAt()
         );
     }
-
 
     @Override
     public void activateAccount(String token) {

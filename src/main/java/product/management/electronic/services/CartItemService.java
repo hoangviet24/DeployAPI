@@ -11,4 +11,5 @@ public interface CartItemService {
     List<CartItem> findUserById(UUID id);
     void deleteAll(List<CartItem> cartItems );
     List<CartItem> findAllByIdIn(List<UUID> id);
+    void deleteCartItemById(UUID cartItemId);
 }

@@ -44,7 +44,7 @@ public class ProductController {
             @RequestParam(required = false) String name,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "false") Boolean sort,
+            @RequestParam(required = false) Boolean sort,
             @RequestParam(defaultValue = "name") String sortBy
     ) {
         int pageIndex = Math.max(0, page - 1);
