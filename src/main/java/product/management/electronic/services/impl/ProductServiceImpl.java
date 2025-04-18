@@ -55,7 +55,7 @@ public class ProductServiceImpl implements ProductService {
             Sort sorting = Sort.by(sortBy).descending();
             pageable = PageRequest.of(page, size, sorting);
         }else if(sort == false){
-            Sort sorting = Sort.by("id").ascending();
+            Sort sorting = Sort.by(sortBy).ascending();
             pageable = PageRequest.of(page,size,sorting);
         }
         else {
@@ -71,7 +71,7 @@ public class ProductServiceImpl implements ProductService {
             Sort sorting = Sort.by(sortBy).descending();
             pageable = PageRequest.of(page, size, sorting);
         } else if(sort == false){
-            Sort sorting = Sort.by("id").ascending();
+            Sort sorting = Sort.by(sortBy).ascending();
             pageable = PageRequest.of(page,size,sorting);
         }
         else {
