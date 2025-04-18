@@ -11,8 +11,8 @@ import java.util.UUID;
 
 public interface ProductService {
     ProductDto addProduct(AddProductDto addProductDto);
-    List<ProductDto> getProducts(int page, int size, boolean sort, String sortBy);
-    List<ProductDto> getByName(String name, int page, int size, boolean sort, String sortBy);
+    List<ProductDto> getProducts(int page, int size, Boolean sort, String sortBy);
+    List<ProductDto> getByName(String name, int page, int size, Boolean sort, String sortBy);
     ProductDto updateProduct(UUID productId, AddProductDto addProductDto);
     void deleteById(UUID id);
     ProductDto getById(UUID uuid);

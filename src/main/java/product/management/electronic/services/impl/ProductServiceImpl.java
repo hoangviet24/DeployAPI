@@ -49,32 +49,26 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDto> getProducts(int page, int size, boolean sort, String sortBy) {
+    public List<ProductDto> getProducts(int page, int size, Boolean sort, String sortBy) {
         Pageable pageable;
-        if (sort) {
-            Sort sorting = Sort.by(sortBy).descending();
+        if (sort != null) {
+            Sort sorting = Sort.by(sortBy);
+            sorting = sort ? sorting.descending() : sorting.ascending();
             pageable = PageRequest.of(page, size, sorting);
-        }else if(sort == false){
-            Sort sorting = Sort.by(sortBy).ascending();
-            pageable = PageRequest.of(page,size,sorting);
-        }
-        else {
+        } else {
             pageable = PageRequest.of(page, size);
         }
         return productMapper.toDtoList(productRepository.findAll(pageable).getContent());
     }
 
     @Override
-    public List<ProductDto> getByName(String name, int page, int size, boolean sort, String sortBy) {
+    public List<ProductDto> getByName(String name, int page, int size, Boolean sort, String sortBy) {
         Pageable pageable;
-        if (sort) {
-            Sort sorting = Sort.by(sortBy).descending();
+        if (sort != null) {
+            Sort sorting = Sort.by(sortBy);
+            sorting = sort ? sorting.descending() : sorting.ascending();
             pageable = PageRequest.of(page, size, sorting);
-        } else if(sort == false){
-            Sort sorting = Sort.by(sortBy).ascending();
-            pageable = PageRequest.of(page,size,sorting);
-        }
-        else {
+        } else {
             pageable = PageRequest.of(page, size);
         }
         List<Product> products = productRepository.findByNameContaining(name, pageable)
