@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setActivationToken(token);
-        user.setActivationTokenExpirationTime(LocalDateTime.now().plusMinutes(1));
+        user.setActivationTokenExpirationTime(LocalDateTime.now().plusMinutes(15));
         User savedUser = userRepository.save(user);
 
         return new AuthDto(
@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
 
         String newToken = UUID.randomUUID().toString();
         user.setActivationToken(newToken);
-        user.setActivationTokenExpirationTime(LocalDateTime.now().plusMinutes(5));
+        user.setActivationTokenExpirationTime(LocalDateTime.now().plusMinutes(15));
 
         userRepository.save(user);
 
