@@ -15,7 +15,7 @@ public interface CategoryService {
 
     void addCategory(AddCategoryDto addCategoryDto);
 
-    Category findCategoryByName(String name);
+    List<CategoryDto> findCategoryByName(String name);
 
     void updateCategory(UUID id , UpdateCategoryDto updateCategoryDto) ;
 

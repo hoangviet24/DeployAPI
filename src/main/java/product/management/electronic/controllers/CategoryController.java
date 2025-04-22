@@ -35,7 +35,11 @@ public class CategoryController {
         List<CategoryDto> categories = categoryService.findByType(type);
         return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),categories));
     }
-
+    @GetMapping("/getCategoriesByName/{name}")
+    public ResponseEntity<ApiResponse> getCategoriesByName(@PathVariable String name) {
+        List<CategoryDto> categories = categoryService.findCategoryByName(name);
+        return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(),categories));
+    }
     @Operation(summary = "Add new category")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping("/add")

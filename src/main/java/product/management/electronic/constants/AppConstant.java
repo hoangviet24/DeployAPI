@@ -7,7 +7,7 @@ public class AppConstant {
             "/v3/api-docs/**", "/swagger-resources", "/swagger-resources/**", "/configuration/ui",
             "/configuration/security", "/swagger-ui/**", "/webjars/**", "/swagger-ui.html", "/api/auth/**",
             "/api/test/**", "/authenticate", "/api/v1/auth/login", "/api/v1/auth/register","/api/users/forgotPassword",
-            "/api/categories/getAllCategories","/api/categories/getCategoriesByType/**",
+            "/api/categories/getAllCategories","/api/categories/getCategoriesByType/**","/api/categories/getCategoriesByName/**",
             "/api/products/getAllProducts","/api/products/getById/**","/api/users/resend-activation"
 
     };

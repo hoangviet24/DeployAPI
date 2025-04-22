@@ -35,7 +35,6 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final ProductService productService;
-
     @Override
     public OrderDto createOrderFromCart(OrderCreateRequestDto dto, UUID userId) {
         Cart cart = cartService.findUser(userId);
@@ -49,8 +48,7 @@ public class OrderServiceImpl implements OrderService {
         order.setShippingAddress(dto.getShippingAddress());
         order.setNote(dto.getNote());
         order.setOrderStatus(OrderStatus.PENDING);
-        order.setPaymentStatus(PaymentStatus.UNPAID);
-
+        order.setPaymentStatus(PaymentStatus.PAID);
         List<OrderItem> orderItems = new ArrayList<>();
         for (CartItem cartItem : cartItems) {
             if (cartItem.getProduct().getQuantity() < cartItem.getQuantity()) {

@@ -33,10 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDto> findByType(String type) {
-        if (type == null || type.trim().isEmpty() || type.matches(".*[^a-zA-Z0-9].*")) {
-            throw new BadRequestException(FIELD_INVALID);
-        }
-        List<Category> categoryList = categoryRepository.findByType(type);
+        List<Category> categoryList = categoryRepository.findByTypeContaining(type);
         if (categoryList.isEmpty()) {
             throw new BadRequestException(VALUE_NO_EXIST);
         }
@@ -44,8 +41,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category findCategoryByName(String name) {
-        return (categoryRepository.findByName(name));
+    public List<CategoryDto> findCategoryByName(String name) {
+        List<Category> categoryList = categoryRepository.findByNameContaining(name);
+        if (categoryList.isEmpty()) {
+            throw new BadRequestException(VALUE_NO_EXIST);
+        }
+        return categoryMapper.toListDto(categoryList);
     }
 
     @Override

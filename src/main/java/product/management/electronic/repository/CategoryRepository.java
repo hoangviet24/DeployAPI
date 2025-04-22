@@ -12,9 +12,9 @@ import java.util.UUID;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, UUID> {
-    List<Category> findByType(String type);
+    List<Category> findByTypeContaining(String type);
 
+    List<Category> findByNameContaining(String name);
     Category findByName(String name);
-
     Optional<Category> findById(UUID id);
 }
