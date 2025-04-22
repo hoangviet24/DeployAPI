@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import product.management.electronic.dto.Auth.AuthDto;
 import product.management.electronic.dto.Auth.RegisterDto;
+import product.management.electronic.dto.User.GoogleLoginDto;
 import product.management.electronic.dto.User.UpdateUserDto;
 import product.management.electronic.dto.User.UserDto;
 import product.management.electronic.entities.User;
@@ -49,6 +50,7 @@ public class UserServiceImpl implements UserService {
     private final JavaMailSender mailSender;
     @Value("${base_url}")
     private String baseUrl;
+
     public UserDetails loadUserByUsername(String username) throws ResourceNotFoundException {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException(USER_NOTFOUND));
         List<GrantedAuthority> authorities = user.getRole().stream().map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());

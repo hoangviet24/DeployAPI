@@ -3,12 +3,15 @@ package product.management.electronic.mapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import product.management.electronic.dto.Auth.RegisterDto;
+import product.management.electronic.dto.User.GoogleLoginDto;
 import product.management.electronic.dto.User.UserDto;
 import product.management.electronic.entities.Role;
 import product.management.electronic.entities.User;
 import product.management.electronic.enums.RoleType;
 import product.management.electronic.exceptions.ResourceNotFoundException;
 import product.management.electronic.repository.RoleRepository;
+
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -96,4 +99,14 @@ public class UserMapper {
                 user.getCreateAt()
         );
     }
+    public User fromGoogleDto(GoogleLoginDto dto) {
+        User user = new User();
+        user.setEmail(dto.getEmail());
+        user.setUsername(dto.getName() != null ? dto.getName().replace(" ", "_").toLowerCase() : dto.getEmail().split("@")[0]);
+        user.setGoogleId(dto.getGoogleId());
+        user.setActive(true);
+        user.setCreateAt(LocalDateTime.now());
+        return user;
+    }
+
 }

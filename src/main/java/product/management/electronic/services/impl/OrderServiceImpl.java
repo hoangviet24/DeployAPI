@@ -48,7 +48,7 @@ public class OrderServiceImpl implements OrderService {
         order.setShippingAddress(dto.getShippingAddress());
         order.setNote(dto.getNote());
         order.setOrderStatus(OrderStatus.PENDING);
-        order.setPaymentStatus(PaymentStatus.PAID);
+        order.setPaymentStatus(PaymentStatus.UNPAID);
         List<OrderItem> orderItems = new ArrayList<>();
         for (CartItem cartItem : cartItems) {
             if (cartItem.getProduct().getQuantity() < cartItem.getQuantity()) {
