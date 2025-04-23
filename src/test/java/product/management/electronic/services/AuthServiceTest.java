@@ -39,7 +39,7 @@ public class AuthServiceTest {
     private AuthServiceImpl authService;
 
     public void testLogin_Success() {
-        AuthenticationDto authenticationDto = new AuthenticationDto("username", "password123");
+        AuthenticationDto authenticationDto = new AuthenticationDto("username", "password123","a@gmail.com");
         User mockUser = new User();
         mockUser.setUsername("username");
         mockUser.setPassword("$2a$10$hashedPassword123");
@@ -64,14 +64,14 @@ public class AuthServiceTest {
 
     @Test
     public void testLogin_UserNotFound() {
-        AuthenticationDto authenticationDto = new AuthenticationDto("nonExistentUser", "password123");
+        AuthenticationDto authenticationDto = new AuthenticationDto("nonExistentUser", "password123","a@gmail.com");
         when(userRepository.findByUsername("nonExistentUser")).thenReturn(java.util.Optional.empty());
         assertThrows(BadRequestException.class, () -> authService.login(authenticationDto));
     }
 
     @Test
     public void testLogin_AccountNotActivated() {
-        AuthenticationDto authenticationDto = new AuthenticationDto("username", "password123");
+        AuthenticationDto authenticationDto = new AuthenticationDto("username", "password123","a@gmail.com");
         User mockUser = new User();
         mockUser.setUsername("username");
         mockUser.setPassword("$2a$10$hashedPassword123");
@@ -83,7 +83,7 @@ public class AuthServiceTest {
 
     @Test
     public void testLogin_PasswordMismatch() {
-        AuthenticationDto authenticationDto = new AuthenticationDto("username", "wrongPassword");
+        AuthenticationDto authenticationDto = new AuthenticationDto("username", "wrongPassword","a@gmail.com");
         User mockUser = new User();
         mockUser.setUsername("username");
         mockUser.setPassword("$2a$10$hashedPassword123");
@@ -126,7 +126,7 @@ public class AuthServiceTest {
 
     @Test
     public void testLogin_SuccessWithAllFields() {
-        AuthenticationDto authenticationDto = new AuthenticationDto("testuser", "password123");
+        AuthenticationDto authenticationDto = new AuthenticationDto("testuser", "password123","a@gmail.com");
         UUID userId = UUID.randomUUID();
         User mockUser = new User();
         mockUser.setId(userId);

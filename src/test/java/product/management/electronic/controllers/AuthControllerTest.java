@@ -51,7 +51,7 @@ public class AuthControllerTest {
 
     @Test
     void testLogin_Success() throws Exception {
-        AuthenticationDto request = new AuthenticationDto("username", "password123");
+        AuthenticationDto request = new AuthenticationDto("username", "password123","a@gmail.com");
         LoginDto loginDto = new LoginDto(
                 UUID.fromString("123e4567-e89b-12d3-a456-556642440000"),
                 "username",
