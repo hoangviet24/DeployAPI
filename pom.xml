@@ -145,17 +145,6 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
       </dependency>
-<!--		OAuth2-->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-oauth2-client</artifactId>
-		</dependency>
-<!--		Mapper-->
-		<dependency>
-			<groupId>org.modelmapper</groupId>
-			<artifactId>modelmapper</artifactId>
-			<version>3.0.0</version>
-		</dependency>
 	</dependencies>
 
 	<build>

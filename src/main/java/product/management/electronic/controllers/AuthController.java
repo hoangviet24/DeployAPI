@@ -33,6 +33,11 @@ public class AuthController {
         AuthDto response = userService.registerUser(signupRequest);
         return ResponseEntity.ok(response);
     }
+    @PostMapping("/google")
+    public ResponseEntity<ApiResponse<LoginDto>> authGoogle(@RequestBody AuthenticationDto authenticationDto) throws Exception {
+        ApiResponse<LoginDto> response = authService.authGoogle(authenticationDto);
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping("/activate")
     public ResponseEntity<ApiResponse> activateAccount(@RequestParam String token) {
@@ -46,7 +51,6 @@ public class AuthController {
         ApiResponse<LoginDto> loginResponse = authService.login(authenticationDto);
         return ResponseEntity.ok(loginResponse);
     }
-
     @Operation(summary = "Refresh token")
     @PostMapping("/refreshToken")
     public ResponseEntity<ApiResponse> refreshToken(@RequestHeader(value = "Authorization", required = false) String authorizationHeader) {

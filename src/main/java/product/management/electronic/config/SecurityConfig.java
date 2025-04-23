@@ -73,7 +73,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/files/uploadImage").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
-                .oauth2Login(Customizer.withDefaults())
                 .exceptionHandling(exception -> exception
                         .accessDeniedHandler(globalExceptionHandler)
                         .authenticationEntryPoint(new Http403ForbiddenEntryPoint())

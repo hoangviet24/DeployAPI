@@ -1,20 +1,30 @@
 package product.management.electronic.services.impl;
 
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import product.management.electronic.dto.Auth.AuthDto;
 import product.management.electronic.dto.Auth.AuthenticationDto;
 
 import product.management.electronic.dto.Auth.LoginDto;
+import product.management.electronic.dto.Auth.RegisterDto;
 import product.management.electronic.entities.User;
 import product.management.electronic.exceptions.BadRequestException;
+import product.management.electronic.exceptions.ConflictException;
 import product.management.electronic.exceptions.ForbiddenException;
+import product.management.electronic.mapper.UserMapper;
 import product.management.electronic.repository.UserRepository;
 import product.management.electronic.response.ApiResponse;
 import product.management.electronic.services.AuthService;
 import product.management.electronic.services.JwtTokenService;
 import product.management.electronic.services.UserService;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
 
 import static product.management.electronic.constants.MessageConstant.RESOURCE_NOT_FOUND;
 import static product.management.electronic.constants.MessageConstant.TOKEN_INVALID;
@@ -27,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenService jwtTokenService;
-
+    private final UserMapper userMapper;
     public ApiResponse<LoginDto> login(AuthenticationDto authenticationDto) {
         User user = userRepository.findByUsername(authenticationDto.getUsername())
                 .orElseThrow(() -> new BadRequestException(RESOURCE_NOT_FOUND));
@@ -60,6 +70,77 @@ public class AuthServiceImpl implements AuthService {
             user.setRefreshToken(null);
             userService.save(user);
         }
+    }
+
+    @Override
+    public ApiResponse<LoginDto> loginGoogle(AuthenticationDto authenticationDto) {
+        User user = userRepository.findByEmail(authenticationDto.getEmail())
+                .orElseThrow(() -> new BadRequestException(RESOURCE_NOT_FOUND));
+        user.setActive(true);
+        String jwtToken = jwtTokenService.createToken(user.getUsername());
+        String refreshToken = jwtTokenService.createRefreshToken(jwtToken);
+        user.setRefreshToken(refreshToken);
+        userRepository.save(user);
+        LoginDto loginDto = new LoginDto(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                jwtToken,
+                refreshToken
+        );
+        return new ApiResponse<>(200, "Login successful!", loginDto);
+    }
+    @Override
+    public ApiResponse<LoginDto> authGoogle(AuthenticationDto authenticationDto) throws MessagingException, IOException {
+        Optional<User> existingUser = userRepository.findByEmail(authenticationDto.getEmail());
+
+        User user;
+        if (existingUser.isPresent()) {
+            user = existingUser.get();
+        } else {
+            // Map từ AuthenticationDto sang LoginDto nếu cần
+            LoginDto loginDto = new LoginDto();
+            loginDto.setEmail(authenticationDto.getEmail());
+            loginDto.setUsername(authenticationDto.getUsername()); // Nếu có
+            // Nếu cần, có thể set thêm info như avatar từ Google ở đây
+
+            AuthDto registered = registerUser(loginDto);
+            user = userRepository.findById(registered.getId())
+                    .orElseThrow(() -> new BadRequestException("Error during registration"));
+        }
+
+        // Đăng nhập
+        user.setActive(true);
+        String jwtToken = jwtTokenService.createToken(user.getUsername());
+        String refreshToken = jwtTokenService.createRefreshToken(jwtToken);
+        user.setRefreshToken(refreshToken);
+        userRepository.save(user);
+
+        LoginDto loginDto = new LoginDto(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                jwtToken,
+                refreshToken
+        );
+
+        return new ApiResponse<>(200, "Login Google thành công!", loginDto);
+    }
+
+    @Override
+    public AuthDto registerUser(LoginDto request) throws MessagingException, IOException {
+        User user = userMapper.toEntityGoogle(request);
+        user.setActive(true);
+        String newPassword = userService.generateRandomPassword();
+        user.setPassword(newPassword);
+        User savedUser = userRepository.save(user);
+
+        return new AuthDto(
+                savedUser.getId(),
+                savedUser.getUsername(),
+                savedUser.getEmail(),
+                savedUser.getCreateAt()
+        );
     }
 
 }

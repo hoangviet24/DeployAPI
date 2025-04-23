@@ -2,8 +2,8 @@ package product.management.electronic.mapper;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import product.management.electronic.dto.Auth.LoginDto;
 import product.management.electronic.dto.Auth.RegisterDto;
-import product.management.electronic.dto.User.GoogleLoginDto;
 import product.management.electronic.dto.User.UserDto;
 import product.management.electronic.entities.Role;
 import product.management.electronic.entities.User;
@@ -42,18 +42,16 @@ public class UserMapper {
                 user.getCreateAt()
         );
     }
-
-    public User toEntity(UserDto userDto) {
+    public User toEntityGoogle(LoginDto request) {
         User user = new User();
-        user.setId(userDto.getId());
-        user.setUsername(userDto.getUsername());
-        user.setFullname(userDto.getFullname());
-        user.setEmail(userDto.getEmail());
-        user.setPhone(userDto.getPhone());
-        user.setAddress(userDto.getAddress());
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        Set<Role> roles = new HashSet<>();
+        roles.add(roleRepository.findByName(RoleType.ROLE_USER)
+                .orElseThrow(() -> new ResourceNotFoundException("Default role not found")));
+        user.setRole(roles);
         return user;
     }
-
     public User toEntity(RegisterDto request) {
         User user = new User();
         user.setFullname(request.getFullname());
@@ -98,15 +96,6 @@ public class UserMapper {
                 user.isActive(),
                 user.getCreateAt()
         );
-    }
-    public User fromGoogleDto(GoogleLoginDto dto) {
-        User user = new User();
-        user.setEmail(dto.getEmail());
-        user.setUsername(dto.getName() != null ? dto.getName().replace(" ", "_").toLowerCase() : dto.getEmail().split("@")[0]);
-        user.setGoogleId(dto.getGoogleId());
-        user.setActive(true);
-        user.setCreateAt(LocalDateTime.now());
-        return user;
     }
 
 }

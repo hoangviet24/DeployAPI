@@ -40,7 +40,6 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private boolean isActive = false;
     private String activationToken;
-    private String googleId;
     private LocalDateTime activationTokenExpirationTime;
     @Column
     private String refreshToken;

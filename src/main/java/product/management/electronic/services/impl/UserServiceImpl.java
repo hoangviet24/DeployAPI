@@ -16,8 +16,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import product.management.electronic.dto.Auth.AuthDto;
+import product.management.electronic.dto.Auth.AuthenticationDto;
+import product.management.electronic.dto.Auth.LoginDto;
 import product.management.electronic.dto.Auth.RegisterDto;
-import product.management.electronic.dto.User.GoogleLoginDto;
 import product.management.electronic.dto.User.UpdateUserDto;
 import product.management.electronic.dto.User.UserDto;
 import product.management.electronic.entities.User;
@@ -26,6 +27,7 @@ import product.management.electronic.exceptions.ConflictException;
 import product.management.electronic.exceptions.ResourceNotFoundException;
 import product.management.electronic.mapper.UserMapper;
 import product.management.electronic.repository.UserRepository;
+import product.management.electronic.response.ApiResponse;
 import product.management.electronic.services.UserService;
 
 import java.io.IOException;
@@ -103,7 +105,6 @@ public class UserServiceImpl implements UserService {
                 savedUser.getCreateAt()
         );
     }
-
     @Override
     public void activateAccount(String token) {
         Optional<User> userOptional = userRepository.findByActivationToken(token);
