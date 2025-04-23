@@ -9,5 +9,4 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LoginGoogleDto {
     private String email;
-    private String password;
 }
