@@ -5,11 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import product.management.electronic.dto.Auth.AuthDto;
-import product.management.electronic.dto.Auth.AuthenticationDto;
+import product.management.electronic.dto.Auth.*;
 
-import product.management.electronic.dto.Auth.LoginDto;
-import product.management.electronic.dto.Auth.RegisterDto;
 import product.management.electronic.entities.User;
 import product.management.electronic.exceptions.BadRequestException;
 import product.management.electronic.exceptions.ConflictException;
@@ -73,26 +70,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ApiResponse<LoginDto> loginGoogle(AuthenticationDto authenticationDto) {
-        User user = userRepository.findByEmail(authenticationDto.getEmail())
-                .orElseThrow(() -> new BadRequestException(RESOURCE_NOT_FOUND));
-        user.setActive(true);
-        String jwtToken = jwtTokenService.createToken(user.getUsername());
-        String refreshToken = jwtTokenService.createRefreshToken(jwtToken);
-        user.setRefreshToken(refreshToken);
-        userRepository.save(user);
-        LoginDto loginDto = new LoginDto(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                jwtToken,
-                refreshToken
-        );
-        return new ApiResponse<>(200, "Login successful!", loginDto);
-    }
-    @Override
-    public ApiResponse<LoginDto> authGoogle(AuthenticationDto authenticationDto) throws MessagingException, IOException {
-        Optional<User> existingUser = userRepository.findByEmail(authenticationDto.getEmail());
+    public ApiResponse<LoginDto> authGoogle(LoginGoogleDto loginGoogleDto) throws MessagingException, IOException {
+        Optional<User> existingUser = userRepository.findByEmail(loginGoogleDto.getEmail());
 
         User user;
         if (existingUser.isPresent()) {
@@ -100,9 +79,7 @@ public class AuthServiceImpl implements AuthService {
         } else {
             // Map từ AuthenticationDto sang LoginDto nếu cần
             LoginDto loginDto = new LoginDto();
-            loginDto.setEmail(authenticationDto.getEmail());
-            loginDto.setUsername(authenticationDto.getUsername()); // Nếu có
-            // Nếu cần, có thể set thêm info như avatar từ Google ở đây
+            loginDto.setEmail(loginGoogleDto.getEmail());
 
             AuthDto registered = registerUser(loginDto);
             user = userRepository.findById(registered.getId())

@@ -5,10 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class AuthenticationDto {
-    private String username;
+@NoArgsConstructor
+public class LoginGoogleDto {
+    private String email;
     private String password;
-
 }

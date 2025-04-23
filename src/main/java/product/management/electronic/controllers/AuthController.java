@@ -34,8 +34,8 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
     @PostMapping("/google")
-    public ResponseEntity<ApiResponse<LoginDto>> authGoogle(@RequestBody AuthenticationDto authenticationDto) throws Exception {
-        ApiResponse<LoginDto> response = authService.authGoogle(authenticationDto);
+    public ResponseEntity<ApiResponse<LoginDto>> authGoogle(@RequestBody LoginGoogleDto loginGoogleDto) throws Exception {
+        ApiResponse<LoginDto> response = authService.authGoogle(loginGoogleDto);
         return ResponseEntity.ok(response);
     }
 
