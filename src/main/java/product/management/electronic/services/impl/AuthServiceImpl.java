@@ -80,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
             // Map từ AuthenticationDto sang LoginDto nếu cần
             LoginDto loginDto = new LoginDto();
             loginDto.setEmail(loginGoogleDto.getEmail());
-
+            loginDto.setUsername(loginGoogleDto.getUsername());
             AuthDto registered = registerUser(loginDto);
             user = userRepository.findById(registered.getId())
                     .orElseThrow(() -> new BadRequestException("Error during registration"));
@@ -109,7 +109,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userMapper.toEntityGoogle(request);
         user.setActive(true);
         String newPassword = userService.generateRandomPassword();
-        user.setPassword(newPassword);
+        user.setPassword(passwordEncoder.encode(newPassword));
         User savedUser = userRepository.save(user);
 
         return new AuthDto(
