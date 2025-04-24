@@ -17,5 +17,5 @@ public interface OrderService {
 
     List<OrderDto> getAll(OrderStatus orderStatus, PaymentStatus paymentStatus, int page, int size, boolean sort, String sortBy);
     Page<OrderDto> getOrdersByUserId(UUID userId, OrderStatus orderStatus, PaymentStatus paymentStatus, int page, int size, String sortBy, String direction);
-
+    public OrderDto CancelOrderStatus(UUID orderId,UUID userId);
 }

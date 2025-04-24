@@ -88,6 +88,7 @@ public class AuthServiceImpl implements AuthService {
 
         // Đăng nhập
         user.setActive(true);
+        user.setActivationToken("");
         String jwtToken = jwtTokenService.createToken(user.getUsername());
         String refreshToken = jwtTokenService.createRefreshToken(jwtToken);
         user.setRefreshToken(refreshToken);

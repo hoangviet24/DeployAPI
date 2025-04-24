@@ -52,7 +52,17 @@ public class OrderController {
                 new ApiResponse(HttpStatus.OK.value(), ORDER_UPDATED_SUCCESS, updatedOrderDto)
         );
     }
-
+    @PutMapping("/{orderId}/cancel")
+    public ResponseEntity<ApiResponse> cancelOrderStatus(
+            @PathVariable UUID orderId,
+            Authentication authentication) {
+        String username = authentication.getName();
+        UserDto user = userService.findByUsername(username);
+        OrderDto updatedOrderDto = orderService.CancelOrderStatus(orderId,user.getId());
+        return ResponseEntity.ok(
+                new ApiResponse(HttpStatus.OK.value(), ORDER_UPDATED_SUCCESS, updatedOrderDto)
+        );
+    }
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/getAllOrders")
     public ResponseEntity<ApiResponse> getAllOrders(

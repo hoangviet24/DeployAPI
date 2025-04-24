@@ -13,10 +13,7 @@ import product.management.electronic.enums.PaymentStatus;
 import product.management.electronic.exceptions.ResourceNotFoundException;
 import product.management.electronic.mapper.OrderMapper;
 import product.management.electronic.repository.OrderRepository;
-import product.management.electronic.services.CartItemService;
-import product.management.electronic.services.CartService;
-import product.management.electronic.services.OrderService;
-import product.management.electronic.services.ProductService;
+import product.management.electronic.services.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +32,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final ProductService productService;
+    private final UserService userService;
     @Override
     public OrderDto createOrderFromCart(OrderCreateRequestDto dto, UUID userId) {
         Cart cart = cartService.findUser(userId);
@@ -125,6 +123,17 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
 
         return new PageImpl<>(orderDtos, pageable, orderDtos.size());
+    }
+
+    @Override
+    public OrderDto CancelOrderStatus(UUID orderId,UUID userId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException(ORDER_NOT_FOUND));
+        if(!order.getUser().getId().equals(userId)) throw new ResourceNotFoundException("You can't cancel your own order");
+        if(order.getOrderStatus() == OrderStatus.CANCELLED) throw new ResourceNotFoundException("Order is already cancelled");
+        order.setOrderStatus(OrderStatus.CANCELLED);
+        Order updatedOrder = orderRepository.save(order);
+        return orderMapper.toDto(updatedOrder);
     }
 
     private String validateSortProperty(String sortBy) {
