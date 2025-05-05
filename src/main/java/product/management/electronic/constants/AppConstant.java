@@ -8,8 +8,7 @@ public class AppConstant {
             "/api/test/**", "/authenticate", "/api/v1/auth/login", "/api/v1/auth/register","/api/users/forgotPassword",
             "/api/categories/getAllCategories","/api/categories/getCategoriesByType/**","/api/categories/getCategoriesByName/**",
             "/api/products/getAllProducts","/api/products/getById/**","/api/users/resend-activation",
-            "/google"
-
+            "/login/oauth2/**","/login/oauth2/code/google"
     };
     private AppConstant() {
     }

@@ -37,6 +37,8 @@ public class GoogleSheetPaymentServiceImpl implements GoogleSheetPaymentService 
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     @Value("${google.sheet.range}")
     private String range;
+    @Value("${google_credentials}")
+    private String googleCredentials;
     @Scheduled(fixedRate = 30_000)
     @Override
     public void checkPaymentsFromGoogleSheet() {
@@ -75,9 +77,10 @@ public class GoogleSheetPaymentServiceImpl implements GoogleSheetPaymentService 
     }
 
     private List<List<Object>> readTransactions() throws IOException, GeneralSecurityException {
-        try (FileInputStream serviceAccountStream = new FileInputStream("credentials.json")) {
+        try (FileInputStream serviceAccountStream = new FileInputStream(googleCredentials)) {
             GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccountStream)
                     .createScoped(List.of(googleSheetScope));
+
             Sheets sheetsService = new Sheets.Builder(
                     GoogleNetHttpTransport.newTrustedTransport(),
                     JSON_FACTORY,
@@ -85,6 +88,7 @@ public class GoogleSheetPaymentServiceImpl implements GoogleSheetPaymentService 
             )
                     .setApplicationName(applicationName)
                     .build();
+
             ValueRange response = sheetsService.spreadsheets().values()
                     .get(spreadsheetId, range)
                     .execute();
@@ -92,6 +96,7 @@ public class GoogleSheetPaymentServiceImpl implements GoogleSheetPaymentService 
             return response.getValues() == null ? new ArrayList<>() : response.getValues();
         }
     }
+
 
     private String processPaymentContent(String paymentContent) {
         int dashIndex = paymentContent.indexOf('-');

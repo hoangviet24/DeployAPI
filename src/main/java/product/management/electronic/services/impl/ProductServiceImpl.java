@@ -50,31 +50,25 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductDto> getProducts(int page, int size, Boolean sort, String sortBy) {
-        Pageable pageable;
-        if (sort != null) {
-            Sort sorting = Sort.by(sortBy);
-            sorting = sort ? sorting.descending() : sorting.ascending();
-            pageable = PageRequest.of(page, size, sorting);
-        } else {
-            pageable = PageRequest.of(page, size);
-        }
+        Pageable pageable = (sort == null || !Boolean.TRUE.equals(sort))
+                ? PageRequest.of(page, size)
+                : PageRequest.of(page, size, Sort.by(sortBy).descending());
+
         return productMapper.toDtoList(productRepository.findAll(pageable).getContent());
     }
 
     @Override
     public List<ProductDto> getByName(String name, int page, int size, Boolean sort, String sortBy) {
-        Pageable pageable;
-        if (sort != null) {
-            Sort sorting = Sort.by(sortBy);
-            sorting = sort ? sorting.descending() : sorting.ascending();
-            pageable = PageRequest.of(page, size, sorting);
-        } else {
-            pageable = PageRequest.of(page, size);
-        }
+        Pageable pageable = (Boolean.TRUE.equals(sort))
+                ? PageRequest.of(page, size, Sort.by(sortBy).ascending())
+                : PageRequest.of(page, size, Sort.unsorted());
+
         List<Product> products = productRepository.findByNameContaining(name, pageable)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
         return productMapper.toDtoList(products);
     }
+
 
     @Override
     @Transactional
